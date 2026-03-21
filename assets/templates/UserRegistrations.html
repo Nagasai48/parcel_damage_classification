@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+    body {
+        background-image: linear-gradient(rgba(10, 20, 30, 0.4), rgba(10, 20, 30, 0.6)), url('{% static "img/auth_bg.png" %}');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        margin: 0;
+    }
+    @keyframes loginGradient {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+{% endblock %}
+
+{% block content %}
+<br>
+<br>
+<br>
+<style>
+    .jumbotron {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        text-align: center;
+        background: rgba(0, 0, 0, 0); 
+    }
+
+    .form-container {
+        max-width: 600px; 
+        margin: 0 auto;
+        padding: 40px; 
+        border-radius: 12px; 
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); 
+        background: rgba(255, 255, 255, 0.95); 
+        backdrop-filter: blur(10px);
+        border: none;
+    }
+
+        /* Form title */
+    h2 {
+        color: #333; 
+        text-shadow: none; 
+        font-weight: 600;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+        text-align: left;
+    }
+
+    .form-group label {
+        font-weight: 500;
+        color: #555; 
+        font-size: 1rem; 
+        margin-bottom: 5px;
+    }
+
+    .btn-group {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+
+    /* Buttons */
+    .btn-primary {
+        background-color: #333; 
+        border-color: #333;
+        color: #fff; 
+        padding: 10px 30px;
+        font-weight: 500;
+        border-radius: 6px;
+    }
+    .btn-primary:hover {
+        background-color: #555; 
+        border-color: #555;
+        color: #fff;
+    }
+    .btn-outline-dark {
+        color: #000000; /* Black text */
+        border-color: #6c757d; /* Subtle gray border */
+        padding: 10px 20px;
+        font-weight: 500;
+    }
+    .btn-outline-dark:hover {
+        background-color: #6c757d; /* Gray background on hover */
+        color: #000000;
+    }
+
+    /* Input fields */
+    .form-control {
+        background: rgba(255, 255, 255, 0.95); /* Light grayish-white for formal look */
+        color: #000000; /* Black text for input content */
+        border: 1px solid #ced4da; /* Subtle border */
+        border-radius: 5px; /* Rounded edges */
+        font-size: 1rem;
+    }
+
+</style>
+
+<div class="jumbotron wow fadeInUp" data-wow-duration="1s">
+    <div class="container">
+        <div class="card card-body form-container">
+            <form action="{% url 'UserRegisterActions' %}" method="POST" enctype="multipart/form-data" onsubmit="return validatePassword()">
+                {% csrf_token %}
+
+                <h2 align="center" class="mb-4" style="font-weight: 500;">User Sign up</h2>
+
+                <div class="form-group">
+                    <label for="id_name">User Name</label>
+                    {{ form.name }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_loginid">Login Id</label>
+                    {{ form.loginid }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_email">Email</label>
+                    {{ form.email }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_mobile">Mobile</label>
+                    {{ form.mobile }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_password">Password</label>
+                    {{ form.password }}
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm_password">Confirm Password</label>
+                    <input type="password" id="confirm_password" class="form-control" placeholder="Re-enter your password" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="id_locality">Locality</label>
+                    {{ form.locality }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_city">City</label>
+                    {{ form.city }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_state">State</label>
+                    {{ form.state }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_status">Status</label>
+                    {{ form.status }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_address">Address</label>
+                    {{ form.address }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_profile_image">Profile Image</label>
+                    {{ form.profile_image }}
+                </div>
+
+                <div class="mt-4">
+                    <center>
+                                <input type="submit" class="btn btn-primary" value="Register">
+                                <input type="reset" class="btn btn-outline-secondary" value="Reset">
+                    </center>
+                </div>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <p align="center" class="text-danger mt-3">{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function validatePassword() {
+    var password = document.getElementById("id_password").value;
+    var confirmPassword = document.getElementById("confirm_password").value;
+    if (password !== confirmPassword) {
+        alert("Passwords do not match. Please try again.");
+        return false;
+    }
+    return true;
+}
+</script>
+
+{% endblock %}
+
+

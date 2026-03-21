@@ -1,0 +1,94 @@
+{% extends 'admins/adminbase.html' %}
+{% load static %}
+{% block title %}All Prediction History{% endblock %}
+{% block history %}active{% endblock %}
+
+{% block extra_css %}
+    body {
+        background-image: linear-gradient(rgba(10, 15, 25, 0.5), rgba(10, 15, 25, 0.8)), url('{% static "img/admin_dash_bg.png" %}');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+{% endblock %}
+
+{% block content %}
+<style>
+    .jumbotron {
+        background: white; 
+        margin-top: 100px;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+    .img-thumbnail {
+        max-width: 60px;
+        height: auto;
+        border-radius: 8px;
+    }
+    .badge-status {
+        font-size: 0.8rem;
+        padding: 4px 8px;
+        border-radius: 20px;
+    }
+</style>
+
+<div class="container jumbotron wow fadeInUp" data-wow-duration="1s">
+    <h2 class="text-center mb-4 text-dark" style="font-weight: 600;">Global Prediction History</h2>
+    <p class="text-muted text-center mb-4">Viewing prediction records across all users in the system.</p>
+    
+    {% if history %}
+    <div class="table-responsive">
+        <table class="table table-sm table-hover text-center align-middle bg-white rounded" style="font-size: 0.9rem;">
+            <thead style="background-color: #333; color: white;">
+                <tr>
+                    <th scope="col">User</th>
+                    <th scope="col">Image</th>
+                    <th scope="col">Prediction</th>
+                    <th scope="col">Confidence</th>
+                    <th scope="col">Date Evaluated</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in history %}
+                <tr>
+                    <td class="align-middle">
+                        <strong>{{ item.user.name }}</strong><br>
+                        <small class="text-muted">{{ item.user.loginid }}</small>
+                    </td>
+                    <td class="align-middle">
+                        <a href="{{ item.image_url }}" target="_blank">
+                            <img src="{{ item.image_url }}" class="img-thumbnail shadow-sm" alt="Parcel Image">
+                        </a>
+                    </td>
+                    <td class="align-middle font-weight-bold">
+                        {% if item.prediction == 'Damaged' %}
+                            <span class="badge badge-status badge-danger">{{ item.prediction }}</span>
+                        {% elif item.prediction == 'Intact' %}
+                            <span class="badge badge-status badge-success">{{ item.prediction }}</span>
+                        {% else %}
+                            <span class="badge badge-status badge-warning">{{ item.prediction }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="align-middle">{{ item.confidence }}</td>
+                    <td class="align-middle">{{ item.date|date:"M d, Y H:i" }}</td>
+                    <td class="align-middle">
+                        <a href="{% url 'DeletePrediction' %}?id={{ item.id }}" class="btn btn-sm btn-danger text-white" onclick="return confirm('Are you sure you want to delete this prediction history record?');">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center" role="alert">
+        No predictions have been made by any user yet.
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

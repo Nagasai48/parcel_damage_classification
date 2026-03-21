@@ -1,0 +1,189 @@
+{% extends 'admins/adminbase.html' %}
+{% load static %}
+{% block title %}User List{% endblock %}
+{% block user_list %}active{% endblock %}
+{% block extra_css %}
+    body {
+        background-image: linear-gradient(rgba(10, 15, 25, 0.5), rgba(10, 15, 25, 0.8)), url('{% static "img/admin_dash_bg.png" %}');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        margin: 0;
+    }
+    @keyframes adminGradient {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+{% endblock %}
+
+{% block content %}
+
+<br>
+<br>
+<br>
+<br>
+    <style>
+        /* General Styling */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: #ffffff;
+        }
+
+        /* Styling for the main container */
+        .jumbotron {
+            background: rgba(255, 255, 255, 0.85); 
+            backdrop-filter: blur(10px);
+            margin-top: 80px;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Card Styling */
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            background: transparent;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            background: rgba(51, 51, 51, 0.9);
+            color: white;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 500;
+            padding: 15px;
+            border-radius: 10px 10px 0 0;
+        }
+
+        /* Table Styling */
+        .table {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 0 0 10px 10px;
+            overflow: hidden;
+        }
+
+        .table th {
+            background: rgba(200, 200, 200, 0.9);
+            color: #333333;
+            text-align: center;
+            padding: 12px;
+            font-size: 1rem;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .table td {
+            text-align: center;
+            padding: 10px;
+            font-size: 1rem;
+        }
+
+        .btn-link {
+            font-weight: bold;
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        .btn-link:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+
+        /* Status Badge Styling */
+        .status-waiting {
+            background: #ffc107;
+            color: black;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .status-active {
+            background: #28a745;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+    </style>
+
+    <br>
+    <br>
+    <br>
+    <br>
+        <br>
+
+
+    <div>
+        <div class="jumbotron wow fadeInUp" data-wow-duration="1s">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">User List</div>
+                        <div class="card-body">
+                        <div class="wow fadeInUp" data-wow-duration="1s">
+        <table class="table table-hover text-center align-middle bg-white rounded">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Sno</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Login Id</th>
+                                    <th scope="col">Mobile</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">Locality</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Activate</th>
+                                    <th scope="col">Edit</th>
+                                    <th scope="col">Delete</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for user in data %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ user.name }}</td>
+                                        <td>{{ user.loginid }}</td>
+                                        <td>{{ user.mobile }}</td>
+                                        <td>{{ user.email }}</td>
+                                        <td>{{ user.locality }}</td>
+                                        <td>
+                                            {% if user.status == 'waiting' %}
+                                                <span class="status-waiting">Waiting</span>
+                                            {% else %}
+                                                <span class="status-active">Activated</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if user.status == 'waiting' %}
+                                                <a class="btn-link" href="/AdminActivaUsers/?uid={{ user.id }}">Activate</a>
+                                            {% elif user.status == 'blocked' %}
+                                                <span class="text-danger">Blocked</span><br>
+                                                <a class="btn-link text-success" href="/AdminActivaUsers/?uid={{ user.id }}" style="font-size: 0.85rem;">Unblock</a>
+                                            {% else %}
+                                                <span class="text-success">✔ Activated</span><br>
+                                                <a class="btn-link text-warning" href="/BlockUser/?uid={{ user.id }}" style="font-size: 0.85rem;">Block</a>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-sm btn-outline-primary" href="/EditUser/?uid={{ user.id }}">Edit</a>
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-sm btn-outline-danger" href="/DeleteUser/?uid={{ user.id }}" onclick="return confirm('Are you sure you want to delete this user?');">Delete</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+        </table>
+    </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

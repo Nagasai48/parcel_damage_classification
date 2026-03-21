@@ -1,0 +1,83 @@
+{% extends 'admins/adminbase.html' %}
+{% load static %}
+{% block title %}Edit User{% endblock %}
+{% block user_list %}active{% endblock %}
+
+{% block extra_css %}
+    body {
+        background-image: linear-gradient(rgba(10, 15, 25, 0.5), rgba(10, 15, 25, 0.8)), url('{% static "img/admin_dash_bg.png" %}');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        margin: 0;
+    }
+    @keyframes adminGradient {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+{% endblock %}
+
+{% block content %}
+<style>
+    .jumbotron {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: rgba(255, 255, 255, 0.9); 
+        backdrop-filter: blur(10px);
+        margin-top: 100px;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+</style>
+<div class="container jumbotron wow fadeInUp" data-wow-duration="1s">
+    <h2 class="text-center mb-4 text-dark">Edit User Profile</h2>
+    <form action="/EditUserAction/" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="uid" value="{{ user.id }}">
+        
+        <div class="form-group row">
+            <label class="col-md-3 col-form-label text-dark">Name</label>
+            <div class="col-md-9">
+                <input type="text" class="form-control" name="name" value="{{ user.name }}" required>
+            </div>
+        </div>
+        
+        <div class="form-group row">
+            <label class="col-md-3 col-form-label text-dark">Email</label>
+            <div class="col-md-9">
+                <input type="email" class="form-control" name="email" value="{{ user.email }}" required>
+            </div>
+        </div>
+        
+        <div class="form-group row">
+            <label class="col-md-3 col-form-label text-dark">Mobile</label>
+            <div class="col-md-9">
+                <input type="text" class="form-control" name="mobile" value="{{ user.mobile }}" required>
+            </div>
+        </div>
+        
+        <div class="form-group row">
+            <label class="col-md-3 col-form-label text-dark">City</label>
+            <div class="col-md-9">
+                <input type="text" class="form-control" name="city" value="{{ user.city }}" required>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="col-md-3 col-form-label text-dark">Locality</label>
+            <div class="col-md-9">
+                <input type="text" class="form-control" name="locality" value="{{ user.locality }}" required>
+            </div>
+        </div>
+
+        <div class="form-group row mt-4">
+            <div class="col-md-12 text-center">
+                <button type="submit" class="btn btn-success">Update User</button>
+                <a href="/ViewRegisteredUsers/" class="btn btn-secondary">Cancel</a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,119 @@
+{% extends 'admins/adminbase.html' %}
+{% load static %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block admin_home %}active{% endblock %}
+{% block extra_css %}
+    body {
+        background-image: linear-gradient(rgba(10, 15, 25, 0.5), rgba(10, 15, 25, 0.8)), url('{% static "img/admin_dash_bg.png" %}');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        margin: 0;
+    }
+    @keyframes adminGradient {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+{% endblock %}
+
+{% block content %}
+    <style>
+        .jumbotron {
+            background: rgba(0, 0, 0, 0.75); 
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 100px auto 40px auto; 
+            max-width: 900px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 25px 15px;
+            transition: transform 0.3s, background 0.3s;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .stat-card h3 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .stat-card p {
+            font-size: 1.1rem;
+            margin: 0;
+            color: #d1d5db;
+        }
+        
+        .stat-card .icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            opacity: 0.8;
+        }
+    </style>
+
+    <div class="container wow fadeInUp" data-wow-duration="1s">
+        <div class="jumbotron">
+            <h1>Admin Overview Dashboard</h1>
+            
+            <div class="row mt-4">
+                <div class="col-md-4 col-sm-12 mb-4">
+                    <a href="{% url 'ViewRegisteredUsers' %}" style="text-decoration: none; display: block;">
+                        <div class="stat-card">
+                            <div class="icon">👥</div>
+                            <h3 class="text-primary">{{ total_users }}</h3>
+                            <p>Total Users</p>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="col-md-4 col-sm-12 mb-4">
+                    <a href="{% url 'AdminPredictionHistory' %}" style="text-decoration: none; display: block;">
+                        <div class="stat-card">
+                            <div class="icon">📦</div>
+                            <h3 class="text-success">{{ total_uploads }}</h3>
+                            <p>Total Uploads</p>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="col-md-4 col-sm-12 mb-4">
+                    <a href="{% url 'AdminPredictionHistory' %}?filter=damaged" style="text-decoration: none; display: block;">
+                        <div class="stat-card">
+                            <div class="icon">⚠️</div>
+                            <h3 class="text-danger">{{ damaged_parcels }}</h3>
+                            <p>Damaged Parcels</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <a href="{% url 'ViewRegisteredUsers' %}" class="btn btn-outline-light mx-2">Manage Users</a>
+                <a href="{% url 'AdminPredictionHistory' %}" class="btn btn-primary mx-2">View All Predictions</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

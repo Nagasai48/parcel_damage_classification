@@ -1,0 +1,13 @@
+Django==5.0.14
+tensorflow==2.15.0
+keras==2.15.0
+pandas==2.2.0
+numpy==1.26.4
+matplotlib==3.8.2
+seaborn==0.13.2
+scikit-learn==1.4.1.post1
+Pillow==10.2.0
+gunicorn==21.2.0
+whitenoise==6.6.0
+dj-database-url==2.1.0
+psycopg2-binary==2.9.9

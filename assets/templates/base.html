@@ -1,0 +1,230 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="copyright" content="MACode ID, https://macodeid.com/">
+    <title>Parcel Damage Classification</title>
+    
+    <!-- Bootstrap and External CSS -->
+    <link rel="stylesheet" href="{% static 'css/maicons.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'vendor/owl-carousel/css/owl.carousel.css' %}">
+    <link rel="stylesheet" href="{% static 'vendor/animate/animate.css' %}">
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}">
+    
+    <!-- Custom CSS -->
+    <style>
+        /* General Styling */
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        body {
+            background: #ffffff; /* Plain white background */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Navbar Styling */
+        .navbar {
+            background: rgba(15, 23, 42, 0.85) !important; /* Premium Dark Slate background */
+            backdrop-filter: blur(12px);
+            padding: 10px 0; /* Better padding for colored background */
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+        .navbar-brand {
+            font-size: 2.2rem; /* Increased size */
+            font-weight: 700; /* Bolder */
+            color: #ffffff !important;
+            text-shadow: 0 4px 6px rgba(0,0,0,0.6); /* Stronger shadow */
+            letter-spacing: 1px;
+        }
+        .navbar-brand .text-danger {
+            color: #ff3333 !important; /* Brighter red */
+        }
+        .nav-link {
+            font-size: 1rem;
+            color: #ffffff !important;
+            padding: 8px 15px;
+            font-weight: 500;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+        .nav-link:hover {
+            color: #00f2fe !important;
+            transform: translateY(-2px);
+        }
+        .navbar-toggler {
+            border: none;
+        }
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba(255, 255, 255, 1)' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+        }
+
+        /* Button Styling & Animations */
+        .btn {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 7px 14px rgba(0,0,0,0.25) !important;
+        }
+        .btn:active {
+            transform: translateY(1px) scale(0.98);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+            border: none;
+            padding: 10px 30px; /* Larger padding */
+            font-size: 1.1rem; /* Larger font */
+            font-weight: 700;
+            color: #ffffff;
+            border-radius: 30px; /* More rounded */
+            letter-spacing: 1px;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: #ffffff;
+            box-shadow: 0 10px 25px rgba(0, 242, 254, 0.6) !important;
+        }
+
+        /* Content Styling */
+        .container {
+            margin-top: 80px;
+            padding: 15px;
+        }
+        h1, h2, h4, p {
+            color: #333333;
+        }
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+        p {
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #555555;
+        }
+
+        /* Footer Styling */
+        .footer {
+            flex-shrink: 0;
+            width: 100%;
+            background: #333333;
+            color: #ffffff;
+            padding: 10px 0;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+        .footer p {
+            margin: 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 991px) {
+            .navbar {
+                background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%) !important;
+                box-shadow: 0 4px 15px rgba(0, 242, 254, 0.4);
+            }
+            .navbar-collapse {
+                background: #ffffff;
+                border-radius: 10px;
+                padding: 15px;
+                margin-top: 15px;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            }
+            .nav-link {
+                color: #333 !important;
+                text-shadow: none;
+                border-bottom: 1px solid #f0f0f0;
+                padding: 10px 15px;
+            }
+            .nav-link:hover {
+                color: #4facfe !important;
+                background: rgba(0,242,254,0.05);
+                transform: none;
+            }
+            .navbar-brand {
+                font-size: 1.5rem;
+            }
+        }
+        @media (max-width: 768px) {
+            .container {
+                margin-top: 60px;
+                padding: 10px;
+            }
+            .navbar-brand {
+                font-size: 1.3rem;
+            }
+            .btn-primary {
+                padding: 8px 20px;
+                font-size: 0.9rem;
+                display: block;
+                text-align: center;
+                margin-top: 10px;
+            }
+        }
+
+        /* Dynamic background support */
+        {% block extra_css %}{% endblock %}
+
+    </style>
+</head>
+<body>
+    <main>
+        <header>
+            <nav class="navbar navbar-expand-lg navbar-light fixed-top wow fadeInDown" data-wow-duration="0.8s">
+                <div class="container-fluid px-5">
+                    <a class="navbar-brand" href="/">
+                        <span class="text-danger">Parcel Damage</span> Classification
+                    </a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupport"
+                            aria-controls="navbarSupport" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarSupport">
+                        <ul class="navbar-nav ml-auto">
+                            <li class="nav-item {% block home_page %}{% endblock %}">
+                                <a class="nav-link" href="{% url 'index' %}">Home</a>
+                            </li>
+                            <li class="nav-item {% block login_nav %}{% endblock %}">
+                                <a class="nav-link" href="{% url 'Login' %}">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-primary ml-lg-3" href="{% url 'UserRegister' %}">Register</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        {% block content %}
+        <div class="container">
+            <h1>Parcel Damage Classification</h1>
+            <p>Assess parcel damage efficiently with our platform. Log in or register to start.</p>
+        </div>
+        {% endblock %}
+    </main>
+
+    <footer class="footer">
+        <p>© 2025 Parcel Damage Classification</p>
+    </footer>
+
+    <script src="{% static 'js/jquery-3.5.1.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'vendor/owl-carousel/js/owl.carousel.min.js' %}"></script>
+    <script src="{% static 'vendor/wow/wow.min.js' %}"></script>
+    <script src="{% static 'js/theme.js' %}"></script>
+</body>
+</html>

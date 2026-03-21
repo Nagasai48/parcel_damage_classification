@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+    Parcel Damage Classification System
+{% endblock %}
+{% block home_page %}
+    active
+{% endblock %}
+{% block extra_css %}
+    body {
+        background-color: #f4f6f9;
+        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+    
+    /* Hero Section Background */
+    .hero-section {
+        background-image: linear-gradient(rgba(0, 10, 30, 0.6), rgba(0, 10, 30, 0.8)), url("{% static 'img/smart_logistics_hero.png' %}");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 65vh; /* Reduced height to minimize scrolling */
+        display: flex;
+        align-items: flex-start; /* Aligns card higher up */
+        justify-content: center;
+        text-align: center;
+        color: white;
+        padding-top: 130px; /* Provides clearance for the fixed navbar */
+        padding-bottom: 50px;
+    }
+
+    .hero-section .container {
+        margin-top: 0;
+    }
+
+    .glass-card {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 30px 0 rgba(0, 0, 0, 0.4);
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .hero-title {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        color: #ffffff !important;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+    
+    .hero-subtitle {
+        font-size: 1.2rem;
+        font-weight: 300;
+        line-height: 1.6;
+        margin-bottom: 30px;
+        color: #f8f9fa !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    }
+
+    /* Info Section */
+    .info-section {
+        padding: 60px 0;
+        background-color: #ffffff;
+    }
+
+    .info-image {
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        max-width: 100%;
+        transition: transform 0.3s ease;
+    }
+    
+    .info-image:hover {
+        transform: scale(1.02);
+    }
+
+    .feature-box {
+        padding: 25px;
+        border-radius: 12px;
+        background: #fdfdfd;
+        border-left: 5px solid #0056b3;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        margin-bottom: 15px;
+        transition: all 0.3s ease;
+    }
+    
+    .feature-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+
+    .cta-btn {
+        background: linear-gradient(135deg, #0056b3, #007bff);
+        color: white;
+        padding: 12px 30px;
+        border-radius: 30px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        border: none;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+    }
+    
+    .cta-btn:hover {
+        background: linear-gradient(135deg, #004494, #0056b3);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,91,179,0.4);
+        color: white;
+        text-decoration: none;
+    }
+{% endblock %}
+
+{% block content %}
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="glass-card wow fadeInUp" data-wow-duration="1.5s">
+                <h1 class="hero-title">Intelligent Parcel Damage Detection</h1>
+                <p class="hero-subtitle">
+                    Automating quality control in logistics. Our advanced AI-driven platform instantly categorizes and assesses parcel conditions, eliminating human error and drastically reducing claims processing time.
+                </p>
+                <a href="{% url 'UserRegister' %}" class="cta-btn d-inline-block mt-3">Get Started Today</a>
+            </div>
+        </div>
+    </section>
+    <!-- Detailed Info Section -->
+    <section class="info-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <!-- Text Content side -->
+                <div class="col-lg-6 mb-4 mb-lg-0 pr-lg-5">
+                    <h2 style="color: #2c3e50; font-weight: 700; margin-bottom: 15px;">What is Parcel Damage Classification?</h2>
+                    <p style="color: #555; font-size: 1rem; line-height: 1.6; margin-bottom: 25px;">
+                        The global supply chain moves millions of packages daily. Unfortunately, transit inevitably causes wear, tear, and critical structural damage to packaging. Manually inspecting every box is impossible, leading to undetected damage, unhappy customers, and complex insurance disputes.
+                    </p>
+                    
+                    <div class="feature-box">
+                        <h4 style="color: #0056b3; font-weight: 600; margin-bottom: 10px;">Deep Learning Vision</h4>
+                        <p style="color: #666; margin-bottom: 0;">We utilize state-of-the-art Convolutional Neural Networks (CNNs) trained on thousands of warehouse images to identify dents, tears, water damage, and structural compromise in real-time.</p>
+                    </div>
+
+                    <div class="feature-box" style="border-left-color: #28a745;">
+                        <h4 style="color: #28a745; font-weight: 600; margin-bottom: 10px;">Instant Reporting</h4>
+                        <p style="color: #666; margin-bottom: 0;">Users simply upload an image of the parcel in question. Within seconds, the system returns a confidence score dictating whether the package is 'Intact' or 'Damaged'.</p>
+                    </div>
+
+                    <div class="feature-box" style="border-left-color: #ffc107;">
+                        <h4 style="color: #e0a800; font-weight: 600; margin-bottom: 10px;">Enterprise Management</h4>
+                        <p style="color: #666; margin-bottom: 0;">Administrators have complete oversight of user activities and historical prediction analytics, making supply chain auditing transparent and data-centric.</p>
+                    </div>
+                </div>
+                
+                <!-- Image side -->
+                <div class="col-lg-6 text-center">
+                    <img src="{% static 'img/parcel_ai.png' %}" alt="AI Analyzing Parcel Data" class="info-image img-fluid">
+                    <p class="text-muted mt-3" style="font-size: 0.9rem; font-style: italic;">Powered by Advanced Neural Networks</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}

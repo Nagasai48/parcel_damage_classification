@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Login{% endblock %}
+{% block login_nav %}active{% endblock %}
+{% block extra_css %}
+    body {
+        background-image: linear-gradient(rgba(10, 20, 30, 0.4), rgba(10, 20, 30, 0.6)), url('{% static "img/auth_bg.png" %}');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        margin: 0;
+    }
+    @keyframes loginGradient {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+{% endblock %}
+{% block content %}
+    <style>
+        .jumbotron {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: rgba(0, 0, 0, 0); 
+            margin-top: 100px;
+        }
+        .login-card {
+            background: rgba(255, 255, 255, 0.95); 
+            backdrop-filter: blur(10px);
+            border: none;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        .login-card h2 {
+            color: #333;
+            text-shadow: none;
+            font-weight: 600;
+        }   
+    </style>
+
+<br>
+<br>
+<br>
+<br>
+<br>
+
+
+    <div class="jumbotron wow fadeInUp" data-wow-duration="1s">
+        <div class="row justify-content-center">
+            <div class="card login-card col-md-5">
+                <h2 class="text-center p-2 mb-4">Login</h2>
+                <form action="{% url 'LoginCheck' %}" method="POST">
+                    {% csrf_token %}
+
+                    <div class="form-group row">
+                        <div class="col-md-12">
+                            <input type="text" class="form-control" name="loginid" required
+                                   placeholder="Enter Login Id">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-md-12">
+                            <input type="password" class="form-control" name="pswd" required
+                                   placeholder="Enter password">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-md-12">
+
+                            <center class="mt-4">
+                                <input type="submit" class="btn btn-dark" value="Login">
+                                <input type="reset" class="btn btn-outline-secondary" value="Reset">
+                            </center>
+                        </div>
+                    </div>
+
+
+                    <!-- Message -->
+                    {% if messages %}
+                        {% for message in messages %}
+                            <p align="center" class="text-danger mt-3"> {{ message }}</p>
+                        {% endfor %}
+                    {% endif %}
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <br>
+    <br>
+    <br>
+{% endblock %}
