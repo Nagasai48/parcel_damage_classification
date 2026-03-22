@@ -178,7 +178,7 @@ def DownloadReport(request, history_id):
 # ---------------- ML PREDICTION VIEWS ---------------- #
 
 # Load model once
-model = load_model(r'models\resnet34_model.h5')
+model = load_model(os.path.join('models', 'resnet34_model.h5'))
 class_names = ['Damaged', 'Intact']
 
 # Load MobileNetV2 model for filtering non-parcel images
