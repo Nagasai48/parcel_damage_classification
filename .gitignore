@@ -47,8 +47,7 @@ venv.bak/
 .idea/
 .vscode/
 
-# Models - Too Large for standard GitHub
-models/*.h5
+# Models - Handled via Git LFS
 
 # OS files
 .DS_Store
