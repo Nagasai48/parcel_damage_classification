@@ -175,24 +175,55 @@ def DownloadReport(request, history_id):
         return HttpResponse(f"Error generating report: {str(e)}")
 
 
+import gdown
+
 # ---------------- ML PREDICTION VIEWS ---------------- #
 
-# Load model once
-model_path = os.path.join(str(settings.BASE_DIR), 'models', 'resnet34_model.h5')
-if not os.path.exists(model_path):
-    model_path = os.path.join(str(settings.BASE_DIR), 'resnet34_model.h5')
+# We will lazy-load models to prevent Gunicorn timeout/crashing on startup
+model = None
+mobilenet_model = None
 
-model = load_model(model_path)
 class_names = ['Damaged', 'Intact']
-
-# Load MobileNetV2 model for filtering non-parcel images
-mobilenet_model = MobileNetV2(weights='imagenet')
 
 # Define valid ImageNet classes for parcels and related items
 VALID_PARCEL_CLASSES = [
     'carton', 'crate', 'envelope', 'packet', 'plastic_bag', 
     'mailbag', 'box', 'package', 'wrapping'
 ]
+
+def get_damage_model():
+    global model
+    if model is None:
+        model_dir = os.path.join(str(settings.BASE_DIR), 'models')
+        os.makedirs(model_dir, exist_ok=True)
+        model_path = os.path.join(model_dir, 'resnet34_model.h5')
+        
+        # If downloaded file is too small (e.g. Google Drive HTML error page), remove it
+        if os.path.exists(model_path) and os.path.getsize(model_path) < 10000000:
+            os.remove(model_path)
+            
+        if not os.path.exists(model_path):
+            alternate_path = os.path.join(str(settings.BASE_DIR), 'resnet34_model.h5')
+            if os.path.exists(alternate_path) and os.path.getsize(alternate_path) > 10000000:
+                model_path = alternate_path
+            else:
+                print(f"Model not found. Downloading to {model_path}...")
+                file_id = "1N9-cnWPOs2z0VGplxdJU1nuBQYoLXZHf"
+                gdown.download(id=file_id, output=model_path, quiet=False)
+                
+        # Final safety check before loading
+        if os.path.exists(model_path) and os.path.getsize(model_path) < 10000000:
+            os.remove(model_path)
+            raise Exception("Google Drive download quota exceeded. Please try again later or manually upload the model.")
+            
+        model = load_model(model_path)
+    return model
+
+def get_mobilenet_model():
+    global mobilenet_model
+    if mobilenet_model is None:
+        mobilenet_model = MobileNetV2(weights='imagenet')
+    return mobilenet_model
 
 def is_parcel_image(full_path):
     try:
@@ -201,7 +232,7 @@ def is_parcel_image(full_path):
         x = np.expand_dims(x, axis=0)
         x = preprocess_input(x)
         
-        preds = mobilenet_model.predict(x)
+        preds = get_mobilenet_model().predict(x)
         decoded_preds = decode_predictions(preds, top=5)[0]
         
         for _, class_name, prob in decoded_preds:
@@ -237,7 +268,7 @@ def predict_view(request):
             return render(request, 'users/predict.html', context)
 
         # Predict Damage using the main ResNet model
-        prediction = model.predict(img_array)[0]
+        prediction = get_damage_model().predict(img_array)[0]
 
         if len(prediction) == 1:  # sigmoid model
             prob = float(prediction)
