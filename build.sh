@@ -1,30 +1,25 @@
 #!/usr/bin/env bash
 # exit on error
 set -o errexit
+
 # Removed pip install from here as Railway does it automatically
 # Download model from Google Drive
-# Replace 'YOUR_GOOGLE_DRIVE_FILE_ID' below with the actual file ID from your shareable link!
+mkdir -p models
+export FILE_ID="1N9-cnWPOs2z0VGplxdJU1nuBQYoLXZHf"
+export DEST_PATH="models/resnet34_model.h5"
+
+echo "Checking if model file exists and is valid..."
+
 python -c "
-import os
-import gdown
-
-file_id = '1N9-cnWPOs2z0VGplxdJU1nuBQYoLXZHf'
-dest_path = 'models/resnet34_model.h5'
-
-if not os.path.exists('models'):
-    os.makedirs('models')
-
-print('Checking if model file exists and is valid...')
-if not os.path.exists(dest_path) or os.path.getsize(dest_path) < 10000000:
-    print('Downloading resnet34_model.h5 from Google Drive...')
-    try:
-        url = f'https://drive.google.com/uc?id={file_id}'
-        gdown.download(url, dest_path, quiet=False)
-    except Exception as e:
-        print(f'Failed to download model: {e}')
-else:
+import os, sys
+dest = os.environ['DEST_PATH']
+if os.path.exists(dest) and os.path.getsize(dest) > 10000000:
     print('Model already exists and seems valid.')
-"
+    sys.exit(0)
+else:
+    print('Model file missing or incomplete. Starting download...')
+    sys.exit(1)
+" || gdown --id "$FILE_ID" -O "$DEST_PATH"
 
 python manage.py collectstatic --no-input
 python manage.py migrate
