@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 # exit on error
 set -o errexit
-
-pip install -r requirements.txt
-
+# Removed pip install from here as Railway does it automatically
 # Download model from Google Drive
 # Replace 'YOUR_GOOGLE_DRIVE_FILE_ID' below with the actual file ID from your shareable link!
 python -c "
