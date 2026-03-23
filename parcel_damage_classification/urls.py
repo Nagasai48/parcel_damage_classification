@@ -32,6 +32,8 @@ urlpatterns = [
     path('index/', mainView.index, name='index'),
 
     # Admin actions
+    path("AdminLogin/", admins.AdminLoginCheck, name="AdminLogin"),
+    path("AdminLoginCheck/", admins.AdminLoginCheck, name="AdminLoginCheck"),
     path("PredictionHistory/", admins.PredictionHistoryView, name="AdminPredictionHistory"),
     path("DeletePrediction/", admins.DeletePrediction, name="DeletePrediction"),
     path("EditUser/<int:user_id>/", admins.EditUser, name="EditUser"),

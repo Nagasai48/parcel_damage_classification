@@ -20,9 +20,9 @@ def AdminLoginCheck(request):
         except AdminModel.DoesNotExist:
             pass
             
-        if usrid == 'admin' and pswd == 'admin':
-            return redirect('AdminHome')
-        elif usrid == 'Admin' and pswd == 'Admin':
+        if usrid == 'nagasaibokka' and pswd == 'Sai123@':
+            request.session['admin_id'] = 'Admin'
+            request.session['admin_role'] = 'Admin'
             return redirect('AdminHome')
         else:
             messages.success(request, 'Please Check Your Login Details')

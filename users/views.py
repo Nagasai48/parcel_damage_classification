@@ -45,9 +45,11 @@ def LoginCheck(request):
         pswd = request.POST.get('pswd')
         print("Login ID = ", loginid, ' Password = ', pswd)
         
-        # Admin authentication logic (Handled in admins view but keeping fallback)
-        if (loginid == 'admin' and pswd == 'admin') or (loginid == 'Admin' and pswd == 'Admin'):
-            return render(request, 'admins/AdminHome.html')
+        # Admin authentication logic (Integrated single login)
+        if loginid == 'nagasaibokka' and pswd == 'Sai123@':
+            request.session['admin_id'] = 'Admin'
+            request.session['admin_role'] = 'Admin'
+            return redirect('AdminHome')
             
         # User authentication logic
         try:
