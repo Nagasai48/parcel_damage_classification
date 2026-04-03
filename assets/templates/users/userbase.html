@@ -201,7 +201,9 @@
                     {% endif %}
                     <li class="nav-item {% block user_home %}{% endblock %}"><a class="nav-link" href="{% url 'UserHome' %}">Home</a></li>
                     <li class="nav-item {% block predict %}{% endblock %}"><a class="nav-link" href="{% url 'predict_view' %}">Predict</a></li>
-                    <li class="nav-item"><a class="btn btn-primary ml-lg-3 mt-2 mt-lg-0" href="{% url 'index' %}">Logout</a></li>
+                    <li class="nav-item {% block history %}{% endblock %}"><a class="nav-link" href="{% url 'UserDashboard' %}">Dashboard</a></li>
+                    <li class="nav-item {% block profile %}{% endblock %}"><a class="nav-link" href="{% url 'UserProfile' %}">Profile</a></li>
+                    <li class="nav-item"><a class="btn btn-primary ml-lg-3 mt-2 mt-lg-0" href="{% url 'logout' %}">Logout</a></li>
                 </ul>
             </div> <!-- .navbar-collapse -->
                 </div>

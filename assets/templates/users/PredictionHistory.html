@@ -47,6 +47,7 @@
                     <th scope="col">S.No</th>
                     <th scope="col">Image</th>
                     <th scope="col">Prediction</th>
+                    <th scope="col">Type</th>
                     <th scope="col">Confidence</th>
                     <th scope="col">Date & Time</th>
                     <th scope="col">Action</th>
@@ -63,6 +64,13 @@
                     </td>
                     <td class="align-middle font-weight-bold {% if item.prediction == 'Damaged' %}text-danger{% elif item.prediction == 'Intact' %}text-success{% else %}text-warning{% endif %}">
                         {{ item.prediction }}
+                    </td>
+                    <td class="align-middle">
+                        {% if item.prediction == 'Damaged' and item.damage_type %}
+                            {{ item.damage_type }}
+                        {% else %}
+                            -
+                        {% endif %}
                     </td>
                     <td class="align-middle">{{ item.confidence }}</td>
                     <td class="align-middle">{{ item.date|date:"M d, Y H:i" }}</td>

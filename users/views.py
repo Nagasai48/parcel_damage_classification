@@ -1,5 +1,6 @@
 import json
 from django.shortcuts import render, HttpResponse, redirect
+from django.db.models import Q
 from .forms import UserRegistrationForm
 from django.contrib import messages
 from .models import UserRegistrationModel, PredictionHistory, ComplaintModel
@@ -27,9 +28,8 @@ def UserRegisterActions(request):
         if form.is_valid():
             print('Data is Valid')
             form.save()
-            messages.success(request, 'You have been successfully registered')
-            form = UserRegistrationForm()
-            return render(request, 'UserRegistrations.html', {'form': form})
+            messages.success(request, 'successfully register please login')
+            return redirect('Login')
         else:
             print("Form errors:", form.errors)
             messages.error(request, 'Registration failed. Please check your inputs.')
@@ -41,28 +41,27 @@ def UserRegisterActions(request):
 
 def LoginCheck(request):
     if request.method == "POST":
-        loginid = request.POST.get('loginid')
+        email = request.POST.get('email')
         pswd = request.POST.get('pswd')
-        print("Login ID = ", loginid, ' Password = ', pswd)
+        print("Email = ", email, ' Password = ', pswd)
         
         # Admin authentication logic (Integrated single login)
-        if loginid == 'nagasaibokka' and pswd == 'Sai123@':
+        if email in ['nagasaibokka', 'nagasaibokka@gmail.com'] and pswd == 'Sai123@':
             request.session['admin_id'] = 'Admin'
             request.session['admin_role'] = 'Admin'
             return redirect('AdminHome')
             
         # User authentication logic
         try:
-            check = UserRegistrationModel.objects.get(loginid=loginid, password=pswd)
+            check = UserRegistrationModel.objects.get(Q(email=email) | Q(loginid=email), password=pswd)
             status = check.status
             print('Status is = ', status)
             if status == "activated":
                 request.session['id'] = check.id
                 request.session['loggeduser'] = check.name
-                request.session['loginid'] = loginid
+                request.session['email'] = email
+                request.session['loginid'] = check.loginid
                 request.session['email'] = check.email
-                if check.profile_image:
-                    request.session['profile_image'] = check.profile_image.url
                 print("User id At", check.id, status)
                 return redirect('UserHome')
             else:
@@ -249,80 +248,116 @@ def is_parcel_image(full_path):
 def predict_view(request):
     context = {}
 
-    if request.method == 'POST' and request.FILES.get('image'):
-        uploaded_file = request.FILES['image']
+    if request.method == 'POST' and request.FILES.getlist('images'):
+        uploaded_files = request.FILES.getlist('images')
         fs = FileSystemStorage()
-        file_path = fs.save(uploaded_file.name, uploaded_file)
-        full_path = fs.path(file_path)
-
-        # Preprocess image
-        img = image.load_img(full_path, target_size=(256, 256))
-        img_array = image.img_to_array(img) / 255.0
-        img_array = np.expand_dims(img_array, axis=0)
-
-        # Validate if the image is a parcel
-        if not is_parcel_image(full_path):
-            if os.path.exists(full_path):
-                os.remove(full_path) # remove the rejected image file to avoid space buildup
-            context = {
-                'error': 'Wrong Image: This does not look like a parcel. Please upload only parcel/cardboard box images.',
-            }
-            return render(request, 'users/predict.html', context)
-
-        # Predict Damage using the main ResNet model
-        prediction = get_damage_model().predict(img_array)[0]
-
-        if len(prediction) == 1:  # sigmoid model
-            prob = float(prediction)
-
-            if prob >= 0.5:
-                predicted_class = "Intact"
-                confidence = prob
-            else:
-                predicted_class = "Damaged"
-                confidence = 1.0 - prob
-
-        else:  # softmax model
-            confidence = float(np.max(prediction))
-            predicted_class = class_names[np.argmax(prediction)]
-
-        percentage = confidence * 100.0
+        results = []
         
-        severity = None
-        damage_type = None
-
-        if predicted_class == "Damaged":
-            damage_types = ['Crack', 'Dent', 'Tear', 'Wet', 'Crushed']
-            damage_type = random.choice(damage_types)
-            if confidence > 0.90:
-                severity = "High"
-            elif confidence > 0.70:
-                severity = "Medium"
-            else:
-                severity = "Low"
-
         user_id = request.session.get('id')
-        history_id = None
+        user = None
         if user_id:
             user = UserRegistrationModel.objects.get(id=user_id)
-            history_record = PredictionHistory.objects.create(
-                user=user,
-                image_url=fs.url(file_path),
-                prediction=predicted_class,
-                confidence=f"{percentage:.2f}%",
-                damage_type=damage_type,
-                severity_score=severity
-            )
-            history_id = history_record.id
 
-        context = {
-            'prediction': predicted_class,
-            'confidence': f"{percentage:.2f}%",
-            'image_url': fs.url(file_path),
-            'severity': severity,
-            'damage_type': damage_type,
-            'history_id': history_id
-        }
+        for uploaded_file in uploaded_files:
+            file_path = fs.save(uploaded_file.name, uploaded_file)
+            full_path = fs.path(file_path)
+
+            # Preprocess image
+            img = image.load_img(full_path, target_size=(256, 256))
+            img_array = image.img_to_array(img) / 255.0
+            img_array = np.expand_dims(img_array, axis=0)
+
+            # Validate if the image is a parcel
+            if not is_parcel_image(full_path):
+                if os.path.exists(full_path):
+                    os.remove(full_path)
+                results.append({
+                    'image_name': uploaded_file.name,
+                    'error': 'This does not look like a parcel.'
+                })
+                continue
+
+            # Predict Damage using the main ResNet model
+            prediction = get_damage_model().predict(img_array)[0]
+
+            if len(prediction) == 1:  # sigmoid model
+                prob = float(prediction)
+                if prob >= 0.5:
+                    predicted_class = "Intact"
+                    confidence = prob
+                else:
+                    predicted_class = "Damaged"
+                    confidence = 1.0 - prob
+            else:  # softmax model
+                confidence = float(np.max(prediction))
+                predicted_class = class_names[np.argmax(prediction)]
+
+            percentage = confidence * 100.0
+            
+            severity = None
+            damage_type = None
+
+            if predicted_class == "Damaged":
+                # Intelligent Damage Type Determination
+                damage_type = "Crushed 📦" # Default
+                
+                # Use MobileNetV2 hints if possible (we already have the full_path)
+                try:
+                    img_hint = image.load_img(full_path, target_size=(224, 224))
+                    hint_x = image.img_to_array(img_hint)
+                    hint_x = np.expand_dims(hint_x, axis=0)
+                    hint_x = preprocess_input(hint_x)
+                    hint_preds = get_mobilenet_model().predict(hint_x)
+                    hint_decoded = decode_predictions(hint_preds, top=10)[0]
+                    
+                    damage_hints = " ".join([h[1].lower() for h in hint_decoded])
+                    
+                    # Mapping hints to types
+                    if any(w in damage_hints for w in ['water', 'liquid', 'bubble', 'sponge', 'wash', 'rain', 'puddle']):
+                        damage_type = "Wet 💧"
+                    elif any(w in damage_hints for w in ['envelope', 'paper', 'plastic', 'bag', 'tape']):
+                        damage_type = "Torn 📄"
+                    elif any(w in damage_hints for w in ['nail', 'screw', 'needle', 'pencil', 'pen']):
+                        damage_type = "Scratched ⚠️"
+                    elif confidence > 0.85:
+                        damage_type = "Crushed 📦"
+                    else:
+                        # Fallback to random among the 4 if no clear hint
+                        damage_type = random.choice(["Crushed 📦", "Torn 📄", "Wet 💧", "Scratched ⚠️"])
+                except:
+                    damage_type = random.choice(["Crushed 📦", "Torn 📄", "Wet 💧", "Scratched ⚠️"])
+
+                if confidence > 0.90:
+                    severity = "High"
+                elif confidence > 0.70:
+                    severity = "Medium"
+                else:
+                    severity = "Low"
+
+            history_id = None
+            if user:
+                history_record = PredictionHistory.objects.create(
+                    user=user,
+                    image_url=fs.url(file_path),
+                    prediction=predicted_class,
+                    confidence=f"{percentage:.2f}%",
+                    damage_type=damage_type,
+                    severity_score=severity
+                )
+                history_id = history_record.id
+
+            results.append({
+                'image_name': uploaded_file.name,
+                'prediction': predicted_class,
+                'confidence': f"{percentage:.2f}%",
+                'image_url': fs.url(file_path),
+                'severity': severity,
+                'damage_type': damage_type,
+                'history_id': history_id
+            })
+
+        context['results'] = results
+        messages.success(request, f"Processed {len(results)} images successfully.")
 
     # Fetch previous history for the dashboard view
     user_id = request.session.get('id')
@@ -330,3 +365,67 @@ def predict_view(request):
         context['histories'] = PredictionHistory.objects.filter(user_id=user_id).order_by('-date')[:10]
 
     return render(request, 'users/predict.html', context)
+
+
+# User Dashboard View
+def UserDashboard(request):
+    user_id = request.session.get('id')
+    if not user_id:
+        return redirect('Login')
+    
+    user = UserRegistrationModel.objects.get(id=user_id)
+    history = PredictionHistory.objects.filter(user=user).order_by('-date')
+    
+    return render(request, 'users/PredictionHistory.html', {'history': history})
+
+
+# User Profile View
+def UserProfile(request):
+    user_id = request.session.get('id')
+    if not user_id:
+        return redirect('Login')
+    
+    user = UserRegistrationModel.objects.get(id=user_id)
+    return render(request, 'users/UserProfile.html', {'user': user})
+
+
+# Change Password Action
+def ChangePassword(request):
+    if request.method == 'POST':
+        user_id = request.session.get('id')
+        if not user_id:
+            return redirect('Login')
+            
+        old_pass = request.POST.get('old_pass')
+        new_pass = request.POST.get('new_pass')
+        confirm_pass = request.POST.get('confirm_pass')
+        
+        user = UserRegistrationModel.objects.get(id=user_id)
+        
+        if user.password != old_pass:
+            messages.error(request, 'Current password is incorrect.')
+        elif new_pass != confirm_pass:
+            messages.error(request, 'New passwords do not match.')
+        else:
+            user.password = new_pass
+            user.save()
+            messages.success(request, 'Password changed successfully.')
+            
+    return redirect('UserProfile')
+
+
+# Delete Account Action
+def DeleteAccount(request):
+    user_id = request.session.get('id')
+    if not user_id:
+        return redirect('Login')
+        
+    try:
+        user = UserRegistrationModel.objects.get(id=user_id)
+        user.delete()
+        request.session.flush()
+        messages.success(request, 'Your account has been deleted successfully.')
+        return redirect('index')
+    except Exception as e:
+        messages.error(request, f'Error deleting account: {str(e)}')
+        return redirect('UserProfile')

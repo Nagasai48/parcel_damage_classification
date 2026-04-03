@@ -9,8 +9,9 @@ def index(request):
 
 
 def logout(request):
-    return render(request, 'index.html', {})
-
+    request.session.flush()
+    from django.shortcuts import redirect
+    return redirect('index')
 def Login(request):
     return render(request, 'Login.html', {})
 

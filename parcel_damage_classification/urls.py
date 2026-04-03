@@ -29,6 +29,7 @@ urlpatterns = [
     path('', mainView.index, name='index'),
     path("UserRegister/", mainView.UserRegister, name="UserRegister"),
     path("Login/", mainView.Login, name="Login"),
+    path("logout/", mainView.logout, name="logout"),
     path('index/', mainView.index, name='index'),
 
     # Admin actions
@@ -36,7 +37,7 @@ urlpatterns = [
     path("AdminLoginCheck/", admins.AdminLoginCheck, name="AdminLoginCheck"),
     path("PredictionHistory/", admins.PredictionHistoryView, name="AdminPredictionHistory"),
     path("DeletePrediction/", admins.DeletePrediction, name="DeletePrediction"),
-    path("EditUser/<int:user_id>/", admins.EditUser, name="EditUser"),
+    # path("EditUser/<int:user_id>/", admins.EditUser, name="EditUser"),
 
     ### User Side Views
     path("UserRegisterActions/", usr.UserRegisterActions, name="UserRegisterActions"),
@@ -49,6 +50,10 @@ urlpatterns = [
     path("VerifyOTP/", usr.VerifyOTP, name="VerifyOTP"),
     path("DownloadReport/<int:history_id>/", usr.DownloadReport, name="DownloadReport"),
     path("SubmitComplaint/", usr.SubmitComplaint, name="SubmitComplaint"),
+    path("UserDashboard/", usr.UserDashboard, name="UserDashboard"),
+    path("UserProfile/", usr.UserProfile, name="UserProfile"),
+    path("ChangePassword/", usr.ChangePassword, name="ChangePassword"),
+    path("DeleteAccount/", usr.DeleteAccount, name="DeleteAccount"),
 
 
     ### Admin Side Views

@@ -1,0 +1,101 @@
+{% extends 'users/userbase.html' %}
+{% load static %}
+{% block title %}User Profile{% endblock %}
+{% block profile %}active{% endblock %}
+
+{% block extra_css %}
+    body {
+        background-image: linear-gradient(rgba(15, 30, 40, 0.4), rgba(15, 30, 40, 0.7)), url('{% static "img/user_dash_bg.png" %}');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        margin: 0;
+    }
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <!-- Profile Section -->
+        <div class="col-md-6 wow fadeInLeft" data-wow-duration="1s">
+            <div class="card shadow-lg border-0 rounded-lg p-4" style="background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px);">
+                <div class="text-center mb-4">
+                    <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px; font-size: 2rem;">
+                        {{ user.name|first|upper }}
+                    </div>
+                    <h2 class="text-dark">{{ user.name }}</h2>
+                    <p class="text-muted">{{ user.email }}</p>
+                </div>
+                <hr>
+                <div class="profile-details">
+                    <p><strong>Login ID:</strong> {{ user.loginid }}</p>
+                    <p><strong>Mobile:</strong> {{ user.mobile }}</p>
+                    <p><strong>Address:</strong> {{ user.address }}, {{ user.locality }}, {{ user.city }}, {{ user.state }}</p>
+                    <p><strong>Status:</strong> <span class="badge badge-success">{{ user.status }}</span></p>
+                </div>
+                
+                <div class="mt-4 text-center">
+                    <button class="btn btn-outline-danger" data-toggle="modal" data-target="#deleteAccountModal">Delete Account</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Change Password Section -->
+        <div class="col-md-5 wow fadeInRight" data-wow-duration="1s">
+            <div class="card shadow-lg border-0 rounded-lg p-4" style="background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px);">
+                <h3 class="text-center mb-4 text-dark">Change Password</h3>
+                
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form action="{% url 'ChangePassword' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="form-group mb-3">
+                        <label class="text-dark">Current Password</label>
+                        <input type="password" name="old_pass" class="form-control" required>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label class="text-dark">New Password</label>
+                        <input type="password" name="new_pass" class="form-control" required minlength="6">
+                    </div>
+                    <div class="form-group mb-4">
+                        <label class="text-dark">Confirm New Password</label>
+                        <input type="password" name="confirm_pass" class="form-control" required minlength="6">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Update Password</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Account Modal -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" role="dialog" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="deleteAccountModalLabel">Confirm Account Deletion</h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body text-dark">
+        Are you sure you want to delete your account? This action is permanent and all your prediction history will be lost.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <a href="{% url 'DeleteAccount' %}" class="btn btn-danger">Yes, Delete My Account</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

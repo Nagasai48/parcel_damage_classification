@@ -118,6 +118,7 @@
                     {{ form.loginid }}
                 </div>
 
+
                 <div class="form-group">
                     <label for="id_email">Email</label>
                     {{ form.email }}
@@ -130,12 +131,26 @@
 
                 <div class="form-group">
                     <label for="id_password">Password</label>
-                    {{ form.password }}
+                    <div class="input-group">
+                        {{ form.password }}
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="button" onclick="toggleVisibility('id_password', 'eye1')">
+                                <i class="mai-eye" id="eye1"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label for="confirm_password">Confirm Password</label>
-                    <input type="password" id="confirm_password" class="form-control" placeholder="Re-enter your password" required>
+                    <div class="input-group">
+                        <input type="password" id="confirm_password" class="form-control" placeholder="Re-enter your password" required>
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="button" onclick="toggleVisibility('confirm_password', 'eye2')">
+                                <i class="mai-eye" id="eye2"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -163,10 +178,6 @@
                     {{ form.address }}
                 </div>
 
-                <div class="form-group">
-                    <label for="id_profile_image">Profile Image</label>
-                    {{ form.profile_image }}
-                </div>
 
                 <div class="mt-4">
                     <center>
@@ -187,6 +198,18 @@
 </div>
 
 <script>
+function toggleVisibility(id, eyeId) {
+    var x = document.getElementById(id);
+    var eye = document.getElementById(eyeId);
+    if (x.type === "password") {
+        x.type = "text";
+        eye.className = "mai-eye-off";
+    } else {
+        x.type = "password";
+        eye.className = "mai-eye";
+    }
+}
+
 function validatePassword() {
     var password = document.getElementById("id_password").value;
     var confirmPassword = document.getElementById("confirm_password").value;

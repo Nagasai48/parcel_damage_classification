@@ -5,9 +5,9 @@ from .models import UserRegistrationModel
 class UserRegistrationForm(forms.ModelForm):
     name = forms.CharField(widget=forms.TextInput(attrs={'pattern': '[a-zA-Z]+', 'class': 'form-control'}),
                            required=True, max_length=100)
-
     loginid = forms.CharField(widget=forms.TextInput(attrs={'pattern': '[a-zA-Z]+', 'class': 'form-control'}),
                               required=True, max_length=100)
+
 
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={'pattern': '(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}', 'class': 'form-control',
@@ -39,7 +39,6 @@ class UserRegistrationForm(forms.ModelForm):
 
     status = forms.CharField(widget=forms.HiddenInput(), initial='waiting', max_length=100)
     
-    profile_image = forms.ImageField(widget=forms.FileInput(attrs={'class': 'form-control'}), required=False)
 
     class Meta():
         model = UserRegistrationModel

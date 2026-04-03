@@ -126,7 +126,28 @@
                     <div class="card">
                         <div class="card-header">User List</div>
                         <div class="card-body">
-                        <div class="wow fadeInUp" data-wow-duration="1s">
+                            <!-- Search and Filter Form -->
+                            <div class="row mb-4">
+                                <div class="col-md-12">
+                                    <form method="GET" action="{% url 'ViewRegisteredUsers' %}" class="form-inline justify-content-center">
+                                        <div class="input-group mr-3 mb-2" style="width: 350px;">
+                                            <input type="text" name="search" class="form-control" placeholder="Search by name, email or login id..." value="{{ request.GET.search }}">
+                                            <div class="input-group-append">
+                                                <button class="btn btn-primary" type="submit">Search</button>
+                                            </div>
+                                        </div>
+                                        <select name="status" class="form-control mr-3 mb-2" onchange="this.form.submit()">
+                                            <option value="">All Statuses</option>
+                                            <option value="activated" {% if request.GET.status == 'activated' %}selected{% endif %}>Activated</option>
+                                            <option value="waiting" {% if request.GET.status == 'waiting' %}selected{% endif %}>Waiting</option>
+                                            <option value="blocked" {% if request.GET.status == 'blocked' %}selected{% endif %}>Blocked</option>
+                                        </select>
+                                        <a href="{% url 'ViewRegisteredUsers' %}" class="btn btn-outline-secondary mb-2">Clear</a>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <div class="wow fadeInUp" data-wow-duration="1s">
         <table class="table table-hover text-center align-middle bg-white rounded">
                                 <thead>
                                 <tr>
@@ -160,20 +181,20 @@
                                         </td>
                                         <td>
                                             {% if user.status == 'waiting' %}
-                                                <a class="btn-link" href="/AdminActivaUsers/?uid={{ user.id }}">Activate</a>
+                                                <a class="btn-link" href="{% url 'AdminActivaUsers' %}?uid={{ user.id }}">Activate</a>
                                             {% elif user.status == 'blocked' %}
                                                 <span class="text-danger">Blocked</span><br>
-                                                <a class="btn-link text-success" href="/AdminActivaUsers/?uid={{ user.id }}" style="font-size: 0.85rem;">Unblock</a>
+                                                <a class="btn-link text-success" href="{% url 'AdminActivaUsers' %}?uid={{ user.id }}" style="font-size: 0.85rem;">Unblock</a>
                                             {% else %}
                                                 <span class="text-success">✔ Activated</span><br>
-                                                <a class="btn-link text-warning" href="/BlockUser/?uid={{ user.id }}" style="font-size: 0.85rem;">Block</a>
+                                                <a class="btn-link text-warning" href="{% url 'BlockUser' %}?uid={{ user.id }}" style="font-size: 0.85rem;">Block</a>
                                             {% endif %}
                                         </td>
                                         <td>
-                                            <a class="btn btn-sm btn-outline-primary" href="/EditUser/?uid={{ user.id }}">Edit</a>
+                                            <a class="btn btn-sm btn-outline-primary" href="{% url 'EditUser' %}?uid={{ user.id }}">Edit</a>
                                         </td>
                                         <td>
-                                            <a class="btn btn-sm btn-outline-danger" href="/DeleteUser/?uid={{ user.id }}" onclick="return confirm('Are you sure you want to delete this user?');">Delete</a>
+                                            <a class="btn btn-sm btn-outline-danger" href="{% url 'DeleteUser' %}?uid={{ user.id }}" onclick="return confirm('Are you sure you want to delete this user?');">Delete</a>
                                         </td>
                                     </tr>
                                 {% endfor %}

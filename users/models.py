@@ -2,8 +2,8 @@ from django.db import models
 
 # Create your models here.
 class UserRegistrationModel(models.Model):
-    name = models.CharField(max_length=100)
-    loginid = models.CharField(unique=True, max_length=100)
+    name = models.CharField(unique=True, max_length=100)
+    loginid = models.CharField(unique=True, max_length=100, null=True, blank=True)
     password = models.CharField(max_length=100)
     mobile = models.CharField(unique=True, max_length=100)
     email = models.CharField(unique=True, max_length=100)
@@ -14,12 +14,11 @@ class UserRegistrationModel(models.Model):
     status = models.CharField(max_length=100)
     
     # New Fields
-    profile_image = models.ImageField(upload_to='profiles/', null=True, blank=True)
     otp_code = models.CharField(max_length=6, null=True, blank=True)
     otp_created_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
-        return self.loginid
+        return self.email
 
     class Meta:
         db_table = 'UserRegistrations'
@@ -37,7 +36,7 @@ class PredictionHistory(models.Model):
     date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.loginid} - {self.prediction}"
+        return f"{self.user.email} - {self.prediction}"
 
 class ComplaintModel(models.Model):
     user = models.ForeignKey(UserRegistrationModel, on_delete=models.CASCADE)
@@ -47,4 +46,4 @@ class ComplaintModel(models.Model):
     date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.loginid} - {self.subject}"
+        return f"{self.user.email} - {self.subject}"

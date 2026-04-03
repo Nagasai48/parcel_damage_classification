@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.db.models import Q
 from users.models import UserRegistrationModel, PredictionHistory
 from .models import AdminModel
 
@@ -20,17 +21,31 @@ def AdminLoginCheck(request):
         except AdminModel.DoesNotExist:
             pass
             
-        if usrid == 'nagasaibokka' and pswd == 'Sai123@':
+        if usrid in ['nagasaibokka', 'nagasaibokka@gmail.com'] and pswd == 'Sai123@':
             request.session['admin_id'] = 'Admin'
             request.session['admin_role'] = 'Admin'
             return redirect('AdminHome')
         else:
-            messages.success(request, 'Please Check Your Login Details')
+            messages.error(request, 'Invalid Admin Details')
     return render(request, 'AdminLogin.html', {})
 
 
 def ViewRegisteredUsers(request):
+    search_query = request.GET.get('search')
+    status_filter = request.GET.get('status')
+    
     data = UserRegistrationModel.objects.all()
+    
+    if search_query:
+        data = data.filter(
+            Q(name__icontains=search_query) | 
+            Q(email__icontains=search_query) | 
+            Q(loginid__icontains=search_query)
+        )
+    
+    if status_filter:
+        data = data.filter(status=status_filter)
+        
     return render(request, 'admins/RegisteredUsers.html', {'data': data})
 
 
@@ -48,11 +63,13 @@ def AdminHome(request):
     total_users = UserRegistrationModel.objects.count()
     total_uploads = PredictionHistory.objects.count()
     damaged_parcels = PredictionHistory.objects.filter(prediction='Damaged').count()
+    intact_parcels = total_uploads - damaged_parcels
     
     context = {
         'total_users': total_users,
         'total_uploads': total_uploads,
         'damaged_parcels': damaged_parcels,
+        'intact_parcels': intact_parcels,
         'accuracy_stats': '92.5%', # Approximate model accuracy
     }
     return render(request, 'admins/AdminHome.html', context)
@@ -67,13 +84,14 @@ def EditUserAction(request):
     if request.method == 'POST':
         uid = request.POST.get('uid')
         name = request.POST.get('name')
+        loginid = request.POST.get('loginid')
         email = request.POST.get('email')
         mobile = request.POST.get('mobile')
         city = request.POST.get('city')
         locality = request.POST.get('locality')
         
         UserRegistrationModel.objects.filter(id=uid).update(
-            name=name, email=email, mobile=mobile, city=city, locality=locality
+            name=name, loginid=loginid, email=email, mobile=mobile, city=city, locality=locality
         )
         messages.success(request, 'User updated successfully!')
         data = UserRegistrationModel.objects.all()
